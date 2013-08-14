@@ -5,6 +5,7 @@ require 'xmlsimple'
 require 'cgi'
 require 'singleton'
 require 'active_support'
+require 'active_support/inflector'
 
 module OpsourceClient
   class Client
