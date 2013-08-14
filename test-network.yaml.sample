@@ -1,0 +1,5 @@
+organization_id: c896bc57-3269-4163-b802-4da1bdc2acde
+admin_username: you@company.com
+admin_password: 
+network_id:  9e95d66e-e2f7-11e1-9153-001f21cfdbe0
+api_endpoint: https://api-au.dimensiondata.com/oec/0.9/
