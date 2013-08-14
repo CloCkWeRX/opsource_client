@@ -11,7 +11,7 @@ module OpsourceClient
       self.post("/network/#{req_params[:net_id]}/acl", create_acl_request_xml(req_params))
     end
 
-    def delete(params)
+    def delete_acl(params)
       req_params = {:net_id => '', :natrule_id => ''}.merge(params)
       self.get("/network/#{req_params[:net_id]}/aclrule/#{req_params[:natrule_id]}?delete", nil)
     end
