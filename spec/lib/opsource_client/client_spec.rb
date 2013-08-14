@@ -1,24 +1,56 @@
 require 'spec_helper'
 
-describe OpsourceClient::Client do
+describe OpsourceClient::Client, :vcr do
 
-  let(:client) {
-    OpsourceClient::Client.new
+
+  let(:settings) {
+    YAML::load(File.open("test-network.yaml"))
   }
 
+  let(:client) {
+    opc = OpsourceClient::Client.new
+    opc.api_endpoint = settings["api_endpoint"]
+    opc.organization_id = settings["organization_id"]
+    opc.admin_username = settings["admin_username"]
+    opc.admin_password = settings["admin_password"]
+
+    opc
+  }
+
+
   it "should be configurable" do
-     client.api_endpoint.should == "https://api.opsourcecloud.net/oec/0.9/"
+    client.api_endpoint = "http://google.com/"
+    client.api_endpoint.should == "http://google.com/"
 
-     client.api_endpoint = "http://google.com/"
-     client.api_endpoint.should == "http://google.com/"
-
-     client.admin_username = "hi"
-     client.admin_username.should == "hi"
+    client.admin_username = "hi"
+    client.admin_username.should == "hi"
   end
 
+  it "should raise exceptions for invalid requests" do
+    expect {client.all_natrules({})}.to raise_error
+  end
 
   it "should list all natrules" do
-    put client.all_natrules({}).inspect
+    #https://api-au.dimensiondata.com/oec/0.9/c896bc57-3269-4163-b802-4da1bdc2acd1/network/9e95d66e-e2f7-11e1-9153-001b21cfdbe0/natrule
+
+#     <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+# <ns4:NatRules xmlns:ns2="http://oec.api.opsource.net/schemas/organization"
+# xmlns="http://oec.api.opsource.net/schemas/server" .. >
+# <ns4:NatRule>
+# <ns4:id>4514-a25a</ns4:id>
+# <ns4:name>10.147.15.11</ns4:name>
+# <ns4:natIp>63.88.83.145</ns4:natIp>
+# <ns4:sourceIp>10.147.15.11</ns4:sourceIp>
+# </ns4:NatRule>
+# :
+# <ns4:NatRule>
+# <ns4:id>0958-419e</ns4:id>
+# <ns4:name>10.147.15.12</ns4:name>
+# <ns4:natIp>63.88.83.147</ns4:natIp>
+# <ns4:sourceIp>10.147.15.12</ns4:sourceIp>
+# </ns4:NatRule>
+
+    puts client.all_natrules({:net_id => settings["network_id"]}).inspect
   end
 
    # def all_natrules(params)
