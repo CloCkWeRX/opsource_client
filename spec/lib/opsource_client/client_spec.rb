@@ -31,26 +31,18 @@ describe OpsourceClient::Client, :vcr do
   end
 
   it "should list all natrules" do
-    #https://api-au.dimensiondata.com/oec/0.9/c896bc57-3269-4163-b802-4da1bdc2acd1/network/9e95d66e-e2f7-11e1-9153-001b21cfdbe0/natrule
+    response = client.all_natrules({:net_id => settings["network_id"]})
 
-#     <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-# <ns4:NatRules xmlns:ns2="http://oec.api.opsource.net/schemas/organization"
-# xmlns="http://oec.api.opsource.net/schemas/server" .. >
-# <ns4:NatRule>
-# <ns4:id>4514-a25a</ns4:id>
-# <ns4:name>10.147.15.11</ns4:name>
-# <ns4:natIp>63.88.83.145</ns4:natIp>
-# <ns4:sourceIp>10.147.15.11</ns4:sourceIp>
-# </ns4:NatRule>
-# :
-# <ns4:NatRule>
-# <ns4:id>0958-419e</ns4:id>
-# <ns4:name>10.147.15.12</ns4:name>
-# <ns4:natIp>63.88.83.147</ns4:natIp>
-# <ns4:sourceIp>10.147.15.12</ns4:sourceIp>
-# </ns4:NatRule>
-
-    puts client.all_natrules({:net_id => settings["network_id"]}).inspect
+    response.should == {
+      :NatRule=>[
+        {:id=>"ad2d06af-de06-4abf-b114-b49d7a6e43a7", :name=>"10.208.226.12", :natIp=>"175.184.203.234", :sourceIp=>"10.208.226.12"}, 
+        {:id=>"0fdb1299-23bb-4103-997d-dbd988aac2ad", :name=>"10.208.226.17", :natIp=>"175.184.33.196", :sourceIp=>"10.208.226.17"}, 
+        {:id=>"696d771a-99e9-4d2e-b904-b16a2cb1c75c", :name=>"10.208.226.18", :natIp=>"175.184.203.235", :sourceIp=>"10.208.226.18"}, 
+        {:id=>"4148f78b-5e21-4620-8f81-8aff0d06c2b9", :name=>"10.208.226.20", :natIp=>"175.184.33.198", :sourceIp=>"10.208.226.20"}, 
+        {:id=>"4038fbf1-e8d7-4a06-b462-693824854fc9", :name=>"10.208.226.21", :natIp=>"175.184.33.197", :sourceIp=>"10.208.226.21"}, 
+        {:id=>"91d47737-068d-4d7c-8002-cbde3eab4df6", :name=>"10.208.226.26", :natIp=>"175.184.33.199", :sourceIp=>"10.208.226.26"}
+      ]
+    }
   end
 
    # def all_natrules(params)
