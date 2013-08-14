@@ -22,26 +22,28 @@ module OpsourceClient
     end
 
     def api_base_url
-      "#{api_endpoint}/#{@org_id}"
+      "#{api_endpoint}/#{organization_id}"
     end
 
     protected
 
     def request(type, endpoint, body = nil)
+
+      uri = URI.parse(api_base_url + endpoint)
+
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = true
+
+      # construct the call data and access token
+      req = Net::HTTP.const_get(type.to_s.camelize).new(uri.request_uri, initheader = {'Content-Type' =>'application/json', 'User-Agent' => 'WePay Ruby SDK'})
+      req.content_type = "text/xml" if body
+      req.body = body if body
+      req.basic_auth self.admin_username, self.admin_password
+      
       begin
-        uri = URI.parse(api_base_url + endpoint)
-        http = Net::HTTP.new(uri.host, uri.port)
-        http.use_ssl = true
-
-        # construct the call data and access token
-        req = Net::HTTP.const_get(type.to_s.camelize).new(uri.request_uri, initheader = {'Content-Type' =>'application/json', 'User-Agent' => 'WePay Ruby SDK'})
-        req.content_type = "text/xml" if body
-        req.body = body if body
-        req.basic_auth @username, @password
         response = http.request(req)
-
       rescue TimeoutError => error
-        raise OpsourceClient::Exceptions::ConnectionError.new("Timeout error. Invalid Api URL or Opsource server is probably down: \"#{@url}\"")
+        raise OpsourceClient::Exceptions::ConnectionError.new("Timeout error. Invalid Api URL or Opsource server is probably down: \"#{uri}\"")
       rescue  SocketError, Errno::ECONNREFUSED => se
         raise OpsourceClient::Exceptions::ConnectionError.new("Socket error. Could not connect to Opsource server.")
       end
@@ -63,7 +65,7 @@ module OpsourceClient
       begin
         h = symbolize_response(response.body)
       rescue OpsourceClient::Exceptions::RequestError => e
-        raise OpsourceClient::Exceptions::ApiError.new("Received an Invalid Response. This might mean you sent an invalid request or Opsource is having issues.")
+        raise OpsourceClient::Exceptions::ApiError.new("Received an Invalid Response. This might mean you sent an invalid request or Opsource is having issues, #{e.inspect}")
       rescue => e
         raise OpsourceClient::Exceptions::ApiError.new("There was an error while trying to connect to Opsource - #{e.inspect}")
       end
